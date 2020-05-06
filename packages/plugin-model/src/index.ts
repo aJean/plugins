@@ -72,6 +72,7 @@ export default (api: IApi) => {
     }
   });
 
+  // 监视 src/models 目录
   api.addTmpGenerateWatcherPaths(() => {
     const modelsPath = getModelsPath();
     return [modelsPath];

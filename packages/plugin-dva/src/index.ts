@@ -142,8 +142,8 @@ app.model({ namespace: '${basename(path, extname(path))}', ...(require('${path}'
         }),
       });
 
-      // typings
-
+      // dvaHeadExport 就是我们在 src/models 里面的文件所有 exports，比如一些 state interface
+      // connect 后可以拿到 modle.state
       const connectTpl = readFileSync(join(__dirname, 'connect.tpl'), 'utf-8');
       api.writeTmpFile({
         path: 'plugin-dva/connect.ts',
