@@ -172,7 +172,7 @@ app.model({ namespace: '${basename(path, extname(path))}', ...(require('${path}'
   // src/models 下的文件变化会触发临时文件生成
   api.addTmpGenerateWatcherPaths(() => [getSrcModelsPath()]);
 
-  // dva 优先读用户项目的依赖
+  // 优先读用户项目的 dva 依赖，如果没有使用内置版本
   api.addProjectFirstLibraries(() => [
     { name: 'dva', path: dirname(require.resolve('dva/package.json')) },
   ]);
