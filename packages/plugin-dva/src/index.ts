@@ -88,6 +88,7 @@ export default (api: IApi) => {
           ExtendDvaConfig: '',
           EnhanceApp: '',
           RegisterPlugins: [
+            // immutable state
             api.config.dva?.immer &&
               `app.use(require('${winPath(require.resolve('dva-immer'))}')());`,
           ]
@@ -95,10 +96,8 @@ export default (api: IApi) => {
             .join('\n'),
           RegisterModels: models
             .map(path => {
-              // prettier-ignore
-              return `
-app.model({ namespace: '${basename(path, extname(path))}', ...(require('${path}').default) });
-          `.trim();
+              // 注册用户 model
+              return `app.model({ namespace: '${basename(path, extname(path))}', ...(require('${path}').default) });`.trim();
             })
             .join('\r\n'),
           // use esm version
