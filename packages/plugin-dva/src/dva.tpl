@@ -7,12 +7,18 @@ import { plugin, history } from '../core/umiExports';
 
 let app:any = null;
 
+<<<<<<< HEAD
 export function _onCreate(options = {}) {
+=======
+function _onCreate() {
+  // 这里就可以取到 src/app.ts 里面对于 dva 的 export
+>>>>>>> b0e22715c3e1e0fbc9dfa7dbabc6b50737acde10
   const runtimeDva = plugin.applyPlugins({
     key: 'dva',
     type: ApplyPluginsType.modify,
     initialValue: {},
   });
+  // 创建 dva 对象
   app = dva({
     history,
     {{{ ExtendDvaConfig }}}
@@ -23,10 +29,12 @@ export function _onCreate(options = {}) {
   });
   {{{ EnhanceApp }}}
   app.use(createLoading());
+  // 注册的插件，比如 immer
   {{{ RegisterPlugins }}}
   (runtimeDva.plugins || []).forEach((plugin:any) => {
     app.use(plugin);
   });
+  // 用户写的 model 都会在这里 add，src/modles
   {{{ RegisterModels }}}
   return app;
 }

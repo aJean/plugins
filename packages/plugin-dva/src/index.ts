@@ -88,6 +88,7 @@ export default (api: IApi) => {
           ExtendDvaConfig: '',
           EnhanceApp: '',
           RegisterPlugins: [
+            // immutable state
             api.config.dva?.immer &&
               `app.use(require('${winPath(require.resolve('dva-immer'))}')());`,
           ]
@@ -95,10 +96,8 @@ export default (api: IApi) => {
             .join('\n'),
           RegisterModels: models
             .map(path => {
-              // prettier-ignore
-              return `
-app.model({ namespace: '${basename(path, extname(path))}', ...(require('${path}').default) });
-          `.trim();
+              // 注册用户 model
+              return `app.model({ namespace: '${basename(path, extname(path))}', ...(require('${path}').default) });`.trim();
             })
             .join('\r\n'),
           // use esm version
@@ -144,8 +143,8 @@ app.model({ namespace: '${basename(path, extname(path))}', ...(require('${path}'
         }),
       });
 
-      // typings
-
+      // dvaHeadExport 就是我们在 src/models 里面的文件所有 exports，比如一些 state interface
+      // connect 后可以拿到 modle.state
       const connectTpl = readFileSync(join(__dirname, 'connect.tpl'), 'utf-8');
       api.writeTmpFile({
         path: 'plugin-dva/connect.ts',
@@ -174,7 +173,7 @@ app.model({ namespace: '${basename(path, extname(path))}', ...(require('${path}'
   // src/models 下的文件变化会触发临时文件生成
   api.addTmpGenerateWatcherPaths(() => [getSrcModelsPath()]);
 
-  // dva 优先读用户项目的依赖
+  // 优先读用户项目的 dva 依赖，如果没有使用内置版本
   api.addProjectFirstLibraries(() => [
     { name: 'dva', path: dirname(require.resolve('dva/package.json')) },
   ]);
