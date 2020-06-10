@@ -7,12 +7,7 @@ import { plugin, history } from '../core/umiExports';
 
 let app:any = null;
 
-<<<<<<< HEAD
 export function _onCreate(options = {}) {
-=======
-function _onCreate() {
-  // 这里就可以取到 src/app.ts 里面对于 dva 的 export
->>>>>>> b0e22715c3e1e0fbc9dfa7dbabc6b50737acde10
   const runtimeDva = plugin.applyPlugins({
     key: 'dva',
     type: ApplyPluginsType.modify,
