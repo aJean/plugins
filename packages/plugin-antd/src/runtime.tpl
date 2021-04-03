@@ -1,18 +1,24 @@
 import React from 'react';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, Modal, message } from 'antd';
 import { ApplyPluginsType } from 'umi';
 import { plugin } from '../core/umiExports';
 
 export function rootContainer(container) {
-  const { locale, ...runtimeAntd } = plugin.applyPlugins({
+  const runtimeAntd = plugin.applyPlugins({
     key: 'antd',
     type: ApplyPluginsType.modify,
     initialValue: {},
   });
-  if (locale) {
-    console.warn(
-      'Invalid locale configuration in runtime.antd.config, please use plug-in @umijs/plugin-locale',
-    );
+
+  const finalConfig = {...{{{ config }}},...runtimeAntd}
+
+  if (finalConfig.prefixCls) {
+    Modal.config({
+      rootPrefixCls: finalConfig.prefixCls,
+    });
+    message.config({
+      prefixCls: `${finalConfig.prefixCls}-message`,
+    });
   }
-  return React.createElement(ConfigProvider, {...{{{ config }}},...runtimeAntd}, container);
+  return React.createElement(ConfigProvider, finalConfig, container);
 }

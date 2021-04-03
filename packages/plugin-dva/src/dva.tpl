@@ -4,6 +4,10 @@ import dva from 'dva';
 // @ts-ignore
 import createLoading from '{{{ dvaLoadingPkgPath }}}';
 import { plugin, history } from '../core/umiExports';
+{{{ RegisterModelImports }}}
+{{ #dvaImmer }}
+import dvaImmer, { enableES5 } from '{{{ dvaImmerPath }}}';
+{{ /dvaImmer }}
 
 let app:any = null;
 
@@ -25,7 +29,12 @@ export function _onCreate(options = {}) {
   {{{ EnhanceApp }}}
   app.use(createLoading());
   // 注册的插件，比如 immer
-  {{{ RegisterPlugins }}}
+  {{ #dvaImmer }}
+  app.use(dvaImmer());
+  {{ /dvaImmer }}
+  {{ #dvaImmerES5 }}
+  enableES5();
+  {{ /dvaImmerES5 }}
   (runtimeDva.plugins || []).forEach((plugin:any) => {
     app.use(plugin);
   });

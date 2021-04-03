@@ -34,7 +34,23 @@ export default (api: IApi) => {
     };
   });
 
-  const opts: IAntdOpts = api.userConfig.antd || {};
+  api.addDepInfo(() => {
+    function getAntdDependency() {
+      const { dependencies, devDependencies } = api.pkg;
+      return (
+        dependencies?.antd ||
+        devDependencies?.antd ||
+        require('../package').dependencies.antd
+      );
+    }
+
+    return {
+      name: 'antd',
+      range: getAntdDependency(),
+    };
+  });
+
+  const opts: IAntdOpts = api.userConfig.antd;
 
   if (opts?.dark || opts?.compact) {
     // support dark mode, user use antd 4 by default
@@ -59,12 +75,6 @@ export default (api: IApi) => {
     },
   ]);
   if (opts?.config) {
-    const { locale, ...otherConfig } = opts?.config;
-    if (locale) {
-      api.logger.warn(
-        'Invalid locale configuration in antd.config, please use plug-in @umijs/plugin-locale',
-      );
-    }
     api.onGenerateFiles({
       fn() {
         // runtime.tsx
@@ -75,7 +85,7 @@ export default (api: IApi) => {
         api.writeTmpFile({
           path: 'plugin-antd/runtime.tsx',
           content: Mustache.render(runtimeTpl, {
-            config: JSON.stringify(otherConfig),
+            config: JSON.stringify(opts?.config),
           }),
         });
       },

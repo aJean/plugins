@@ -1,65 +1,89 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 // @ts-ignore
-import { Link, useModel, history, useIntl, InitialState } from 'umi';
-import pathToRegexp from 'path-to-regexp';
-import ProLayout from '@ant-design/pro-layout';
+import { Link, useModel, history } from 'umi';
+import ProLayout, { BasicLayoutProps } from '@ant-design/pro-layout';
 import './style.less';
-import ErrorBoundary from '../component/ErrorBoundary';
 import renderRightContent from './renderRightContent';
 import { WithExceptionOpChildren } from '../component/Exception';
-import getLayoutConfigFromRoute from '../utils/getLayoutConfigFromRoute';
-import getMenuDataFromRoutes from '../utils/getMenuFromRoute';
-import { MenuItem } from '../types/interface.d';
+import { getMatchMenu, MenuDataItem, transformRoute } from '@umijs/route-utils';
 // @ts-ignore
-import logo from '../assets/logo.svg';
+import logo from '../component/logo';
 
-const BasicLayout = (props: any) => {
-  const { children, userConfig, location, route, ...restProps } = props;
-  const { routes = [] } = route;
-  const initialInfo = (useModel && useModel('@@initialState')) || {
-    initialState: undefined,
-    loading: false,
-    setInitialState: null,
-  }; // plugin-initial-state 未开启
-  const { initialState, loading, setInitialState } = initialInfo;
-  const _routes = require('@@/core/routes').routes;
-  // 国际化插件并非默认启动
-  const intl = useIntl && useIntl();
-  const layoutConfig = getLayoutConfigFromRoute(_routes);
-
-  const patchMenus: (ms: MenuItem[], initialInfo: InitialState) => MenuItem[] =
-    userConfig.patchMenus || ((ms: MenuItem[]): MenuItem[] => ms);
-
-  const menus = patchMenus(getMenuDataFromRoutes(routes), initialInfo);
-
-  // layout 是否渲染相关
-  const pathName = location.pathname;
+const getLayoutRender = (currentPathConfig: {
+  layout:
+    | {
+        hideMenu: boolean;
+        hideNav: boolean;
+        hideFooter: boolean;
+      }
+    | false;
+  hideFooter: boolean;
+}) => {
   const layoutRender: any = {};
-
-  // 动态路由匹配
-  const currentMatchPaths = Object.keys(layoutConfig).filter(item =>
-    pathToRegexp(`${item}(.*)`).test(pathName),
-  );
-
-  const currentPathConfig = currentMatchPaths.length
-    ? layoutConfig[currentMatchPaths[currentMatchPaths.length - 1]]
-    : undefined;
-
-  if (currentPathConfig?.hideMenu) {
-    layoutRender.menuRender = false;
-  }
-
-  if (currentPathConfig?.hideNav) {
-    layoutRender.headerRender = false;
-  }
-
-  if (currentPathConfig?.hideLayout) {
-    layoutRender.pure = true;
-  }
 
   if (currentPathConfig?.hideFooter) {
     layoutRender.footerRender = false;
   }
+
+  if (currentPathConfig?.layout == false) {
+    layoutRender.pure = true;
+    return layoutRender;
+  }
+
+  if (currentPathConfig?.layout?.hideMenu) {
+    layoutRender.menuRender = false;
+  }
+
+  if (currentPathConfig?.layout?.hideFooter) {
+    layoutRender.footerRender = false;
+  }
+
+  if (currentPathConfig?.layout?.hideNav) {
+    layoutRender.headerRender = false;
+  }
+
+  return layoutRender;
+};
+
+const BasicLayout = (props: any) => {
+  const { children, userConfig, location, route, ...restProps } = props;
+  const initialInfo = (useModel && useModel('@@initialState')) || {
+    initialState: undefined,
+    loading: false,
+    setInitialState: null,
+  };
+
+  // plugin-initial-state 未开启
+  const { initialState, loading, setInitialState } = initialInfo;
+  const [currentPathConfig, setCurrentPathConfig] = useState<MenuDataItem>({});
+
+  useEffect(() => {
+    const { menuData } = transformRoute(
+      props?.route?.routes || [],
+      undefined,
+      undefined,
+      true,
+    );
+    // 动态路由匹配
+    const currentPathConfig = getMatchMenu(location.pathname, menuData).pop();
+    setCurrentPathConfig(currentPathConfig || {});
+  }, [location.pathname]);
+
+  // layout 是否渲染相关
+  const layoutRestProps: BasicLayoutProps & {
+    rightContentRender?:
+      | false
+      | ((
+          props: BasicLayoutProps,
+          dom: React.ReactNode,
+          config: any,
+        ) => React.ReactNode);
+  } = {
+    itemRender: route => <Link to={route.path}>{route.breadcrumbName}</Link>,
+    ...userConfig,
+    ...restProps,
+    ...getLayoutRender(currentPathConfig as any),
+  };
 
   return (
     <ProLayout
@@ -75,35 +99,62 @@ const BasicLayout = (props: any) => {
         history.push('/');
       }}
       menu={{ locale: userConfig.locale }}
-      menuDataRender={() => menus}
-      formatMessage={intl && intl.formatMessage}
+      // 支持了一个 patchMenus，其实应该用 menuDataRender
+      menuDataRender={
+        userConfig.patchMenus
+          ? menuData => userConfig.patchMenus(menuData, initialInfo)
+          : undefined
+      }
+      formatMessage={userConfig.formatMessage}
       logo={logo}
       menuItemRender={(menuItemProps, defaultDom) => {
         if (menuItemProps.isUrl || menuItemProps.children) {
           return defaultDom;
         }
-        if (menuItemProps.path) {
-          return <Link to={menuItemProps.path}>{defaultDom}</Link>;
+        if (menuItemProps.path && location.pathname !== menuItemProps.path) {
+          return (
+            <Link to={menuItemProps.path} target={menuItemProps.target}>
+              {defaultDom}
+            </Link>
+          );
         }
         return defaultDom;
       }}
       disableContentMargin
-      rightContentRender={() =>
-        renderRightContent(userConfig, loading, initialState, setInitialState)
-      }
       fixSiderbar
       fixedHeader
-      {...userConfig}
-      {...restProps}
-      {...layoutRender}
+      {...layoutRestProps}
+      rightContentRender={
+        // === false 应该关闭这个功能
+        layoutRestProps?.rightContentRender !== false &&
+        (layoutProps => {
+          const dom = renderRightContent(
+            userConfig,
+            loading,
+            initialState,
+            setInitialState,
+          );
+          if (layoutRestProps.rightContentRender) {
+            return layoutRestProps.rightContentRender(layoutProps, dom, {
+              userConfig,
+              loading,
+              initialState,
+              setInitialState,
+            });
+          }
+          return dom;
+        })
+      }
     >
-      <ErrorBoundary>
-        <WithExceptionOpChildren currentPathConfig={currentPathConfig}>
-          {userConfig.childrenRender
-            ? userConfig.childrenRender(children)
-            : children}
-        </WithExceptionOpChildren>
-      </ErrorBoundary>
+      <WithExceptionOpChildren
+        noFound={userConfig?.noFound}
+        unAccessible={userConfig?.unAccessible}
+        currentPathConfig={currentPathConfig}
+      >
+        {userConfig.childrenRender
+          ? userConfig.childrenRender(children)
+          : children}
+      </WithExceptionOpChildren>
     </ProLayout>
   );
 };

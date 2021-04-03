@@ -1,6 +1,142 @@
 # Change Log
 
-All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## [0.14.1](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.14.0...@umijs/plugin-layout@0.14.1) (2021-03-19)
+
+
+### Bug Fixes
+
+* menuItem should support target ([#558](https://github.com/umijs/plugins/issues/558)) ([ec0f461](https://github.com/umijs/plugins/commit/ec0f46134b7a9002fcdd565d81e6582a2e63a840))
+
+
+
+
+
+# [0.14.0](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.13.5...@umijs/plugin-layout@0.14.0) (2021-03-15)
+
+### Features
+
+- **openapi:** support openapi plugins ([#527](https://github.com/umijs/plugins/issues/527)) ([516a266](https://github.com/umijs/plugins/commit/516a266c00e283d0115ad8fc0bd2fd44d90b1a0f))
+
+## [0.13.5](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.13.4...@umijs/plugin-layout@0.13.5) (2020-12-24)
+
+### Bug Fixes
+
+- **layout:** Not rendering the current Link repeatedly ([#484](https://github.com/umijs/plugins/issues/484)) ([4b00726](https://github.com/umijs/plugins/commit/4b00726bc0d863cc1c765dabaccdf704fbc22710))
+
+## [0.13.4](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.13.3...@umijs/plugin-layout@0.13.4) (2020-12-10)
+
+### Bug Fixes
+
+- layout exports ([#472](https://github.com/umijs/plugins/issues/472)) ([69d47ea](https://github.com/umijs/plugins/commit/69d47ead6e98521415fc3815d2580af69f67fe41))
+
+## [0.13.3](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.13.2...@umijs/plugin-layout@0.13.3) (2020-12-02)
+
+### Bug Fixes
+
+- **layout:** no use d.ts ([7336e32](https://github.com/umijs/plugins/commit/7336e32843bc0c1280e24d2ccebd2883bd235aeb))
+
+## [0.13.2](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.13.1...@umijs/plugin-layout@0.13.2) (2020-12-02)
+
+### Bug Fixes
+
+- **layout:** use new addUmiExports api ([bf0e781](https://github.com/umijs/plugins/commit/bf0e7812d7c394c4540bc4c25f2d0e0eef4cf196))
+
+## [0.13.1](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.13.0...@umijs/plugin-layout@0.13.1) (2020-12-02)
+
+### Bug Fixes
+
+- **layout:** fix layoutExports no has error ([#464](https://github.com/umijs/plugins/issues/464)) ([df029b0](https://github.com/umijs/plugins/commit/df029b03d08c37487c29d749a752b5ded44eadb9))
+
+# [0.13.0](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.12.5...@umijs/plugin-layout@0.13.0) (2020-12-01)
+
+### Features
+
+- **layout:** no use formatMessage ([#462](https://github.com/umijs/plugins/issues/462)) ([bd61e8e](https://github.com/umijs/plugins/commit/bd61e8ec529facdec3e79579a3a11258d52cbab3))
+
+## [0.12.5](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.12.4...@umijs/plugin-layout@0.12.5) (2020-11-06)
+
+### Bug Fixes
+
+- **layout:** up peerDependencies ([5e33de1](https://github.com/umijs/plugins/commit/5e33de18d6123b89b57e9a54349d54803473dc4a))
+
+## [0.12.4](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.12.3...@umijs/plugin-layout@0.12.4) (2020-10-18)
+
+### Bug Fixes
+
+- **layout:** fix layout console some warning ([#410](https://github.com/umijs/plugins/issues/410)) ([d5efbf0](https://github.com/umijs/plugins/commit/d5efbf0856c072ec4c852b22187b7dd2512a4bce))
+
+## [0.12.3](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.12.2...@umijs/plugin-layout@0.12.3) (2020-10-16)
+
+### Bug Fixes
+
+- **layout:** 🛂 better domes ([#406](https://github.com/umijs/plugins/issues/406)) ([6f49726](https://github.com/umijs/plugins/commit/6f49726f87ef9e2fcbb1d45e5127c111305b90aa))
+
+## [0.12.2](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.12.1...@umijs/plugin-layout@0.12.2) (2020-09-15)
+
+### Bug Fixes
+
+- add anticon className to layout right content for support pro-layout mix mode ([#365](https://github.com/umijs/plugins/issues/365)) ([5d375e5](https://github.com/umijs/plugins/commit/5d375e5c307d1b4cd451b767baad8192612ed5bd))
+
+## [0.12.1](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.12.0...@umijs/plugin-layout@0.12.1) (2020-08-26)
+
+**Note:** Version bump only for package @umijs/plugin-layout
+
+# [0.12.0](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.11.15...@umijs/plugin-layout@0.12.0) (2020-08-25)
+
+### Features
+
+- enhancement for mfsu ([#326](https://github.com/umijs/plugins/issues/326)) ([655c0da](https://github.com/umijs/plugins/commit/655c0da475748a0671dd3a5de8ab079dbe1bed5a))
+
+## [0.11.15](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.11.14...@umijs/plugin-layout@0.11.15) (2020-08-19)
+
+### Bug Fixes
+
+- **layout:** 渲染 Breadcrumb 子节点,使用 Link 标签 ([#331](https://github.com/umijs/plugins/issues/331)) ([3c5e1dc](https://github.com/umijs/plugins/commit/3c5e1dc244920c41a7d5fb6364aee53187d07bb3))
+
+## [0.11.14](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.11.13...@umijs/plugin-layout@0.11.14) (2020-08-12)
+
+### Bug Fixes
+
+- **layout:** fix useIntl is null, error page will try error ([#316](https://github.com/umijs/plugins/issues/316)) ([ce7e136](https://github.com/umijs/plugins/commit/ce7e13603cee3e111583ba5a91bafc16c6ad8dae))
+
+## [0.11.13](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.11.12...@umijs/plugin-layout@0.11.13) (2020-07-20)
+
+### Bug Fixes
+
+- **layout:** fix layout no work warning ([#308](https://github.com/umijs/plugins/issues/308)) ([f0e9955](https://github.com/umijs/plugins/commit/f0e99553c0f5ccc8336df922eea7325bb45d79aa))
+
+## [0.11.12](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.11.11...@umijs/plugin-layout@0.11.12) (2020-07-20)
+
+### Bug Fixes
+
+- **plugin-layout:** clean code & fix unaccessible no work problem ([#198](https://github.com/umijs/plugins/issues/198)) ([b771ea7](https://github.com/umijs/plugins/commit/b771ea753c72cd7e5ca83d3b20a4b225ef734bbb))
+
+## [0.11.11](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.11.10...@umijs/plugin-layout@0.11.11) (2020-07-09)
+
+### Bug Fixes
+
+- **layout:** fix the problem that hideNav does not take effect in sarfari ([#299](https://github.com/umijs/plugins/issues/299)) ([fcdc055](https://github.com/umijs/plugins/commit/fcdc055d57446e9c406b9bbdd668b4bebc228d63))
+
+## [0.11.10](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.11.9...@umijs/plugin-layout@0.11.10) (2020-07-02)
+
+### Bug Fixes
+
+- **plugin-layout:** fix rightContentRender no work problem ([#286](https://github.com/umijs/plugins/issues/286)) ([d785c75](https://github.com/umijs/plugins/commit/d785c758c370af94969bdb786568d411cd952f90))
+
+## [0.11.9](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.11.8...@umijs/plugin-layout@0.11.9) (2020-06-30)
+
+### Bug Fixes
+
+- **plugin-layout:** 更简单的使用方式 ([#280](https://github.com/umijs/plugins/issues/280)) ([cbb0d3f](https://github.com/umijs/plugins/commit/cbb0d3fd0bafb22321909877dca85256f4122178))
+
+## [0.11.8](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.11.7...@umijs/plugin-layout@0.11.8) (2020-06-28)
+
+### Bug Fixes
+
+- menu icon inoperative ([#168](https://github.com/umijs/plugins/issues/168)) ([16c1d93](https://github.com/umijs/plugins/commit/16c1d9305f18c702208f7f28bfa13f1c554084c9))
 
 ## [0.11.7](https://github.com/umijs/plugins/compare/@umijs/plugin-layout@0.11.6...@umijs/plugin-layout@0.11.7) (2020-06-03)
 

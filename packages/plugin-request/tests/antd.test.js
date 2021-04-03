@@ -5,7 +5,7 @@ import createTestServer from './createTestServer';
 import { request } from '../src/request';
 
 jest.mock('umi', () => require('./mocks/umi'));
-jest.mock('antd', () => require('./mocks/antd'));
+// jest.mock('antd', () => require('./mocks/antd'));
 
 jest.mock(
   'runtimeConfig',
@@ -26,7 +26,7 @@ jest.mock(
   { virtual: true },
 );
 
-jest.mock('antd', () => {
+jest.mock('@umijs/plugin-request/lib/ui', () => {
   // mock antd throw error for test
   return {
     message: {

@@ -3,7 +3,7 @@ import { join } from 'path';
 import * as allIcons from '@ant-design/icons';
 import getLayoutContent from './utils/getLayoutContent';
 import { LayoutConfig } from './types';
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, copyFileSync, statSync } from 'fs';
 
 const DIR_NAME = 'plugin-layout';
 
@@ -43,6 +43,10 @@ function formatter(data: MenuDataItem[]): string[] {
   }
   let icons: string[] = [];
   (data || []).forEach((item = { path: '/' }) => {
+    // 兼容旧的写法 menu:{icon:""}
+    if (item.menu) {
+      item = { ...item, ...item.menu };
+    }
     if (item.icon) {
       const { icon } = item;
       const v4IconName = toHump(icon.replace(icon[0], icon[0].toUpperCase()));
@@ -74,6 +78,49 @@ export default (api: IApi) => {
     enableBy: api.EnableBy.config,
   });
 
+  api.addDepInfo(() => {
+    const pkg = require('../package.json');
+    return [
+      {
+        name: '@ant-design/pro-layout',
+        range:
+          api.pkg.dependencies?.['@ant-design/pro-layout'] ||
+          api.pkg.devDependencies?.['@ant-design/pro-layout'] ||
+          pkg.peerDependencies['@ant-design/pro-layout'],
+      },
+      {
+        name: '@umijs/route-utils',
+        range: pkg.dependencies['@umijs/route-utils'],
+      },
+      {
+        name: '@ant-design/icons',
+        range: pkg.peerDependencies['@ant-design/icons'],
+      },
+    ];
+  });
+
+  let generatedOnce = false;
+  api.onGenerateFiles(() => {
+    if (generatedOnce) return;
+    generatedOnce = true;
+    const cwd = join(__dirname, '../src');
+    const files = utils.glob.sync('**/*', {
+      cwd,
+    });
+    const base = join(api.paths.absTmpPath!, 'plugin-layout', 'layout');
+    utils.mkdirp.sync(base);
+    files.forEach(file => {
+      if (['index.ts', 'runtime.tsx.tpl'].includes(file)) return;
+      const source = join(cwd, file);
+      const target = join(base, file);
+      if (statSync(source).isDirectory()) {
+        utils.mkdirp.sync(target);
+      } else {
+        copyFileSync(source, target);
+      }
+    });
+  });
+
   api.modifyDefaultConfig(config => {
     // @ts-ignore
     config.title = false;
@@ -98,12 +145,9 @@ export default (api: IApi) => {
     // allow custom theme
     let layoutComponent = {
       // 如果 ProLayout 没有安装会提供一个报错和一个空的 layout 组件
-      PRO: utils.winPath(
-        join(
-          __dirname,
-          haveProLayout() ? './layout/index.js' : './layout/blankLayout.js',
-        ),
-      ),
+      PRO: haveProLayout()
+        ? './layout/layout/index.tsx'
+        : './layout/layout/blankLayout.tsx',
     };
     if (layoutOpts.layoutComponent) {
       layoutComponent = Object.assign(
@@ -116,16 +160,30 @@ export default (api: IApi) => {
     const currentLayoutComponentPath =
       layoutComponent[theme] || layoutComponent['PRO'];
 
+    const layoutExportsContent = readFileSync(
+      join(__dirname, 'layoutExports.ts.tpl'),
+      'utf-8',
+    );
+    api.writeTmpFile({
+      path: 'plugin-layout/layoutExports.ts',
+      content: utils.Mustache.render(layoutExportsContent, {}),
+    });
+
     api.writeTmpFile({
       path: join(DIR_NAME, 'Layout.tsx'),
-      content: getLayoutContent(layoutOpts, currentLayoutComponentPath),
+      content: getLayoutContent(
+        layoutOpts,
+        currentLayoutComponentPath,
+        api.hasPlugins(['@umijs/plugin-locale']),
+      ),
     });
 
     // 生效临时的 icon 文件
     const { userConfig } = api;
     const icons = formatter(userConfig.routes);
     let iconsString = icons.map(
-      iconName => `import ${iconName} from '@ant-design/icons/${iconName}'`,
+      iconName =>
+        `import ${iconName} from '@ant-design/icons/es/icons/${iconName}'`,
     );
     api.writeTmpFile({
       path: join(DIR_NAME, 'icons.ts'),
@@ -133,8 +191,7 @@ export default (api: IApi) => {
   ${iconsString.join(';\n')}
   export default {
     ${icons.join(',\n')}
-  }
-      `,
+  }`,
     });
 
     api.writeTmpFile({
@@ -142,6 +199,7 @@ export default (api: IApi) => {
       content: readFileSync(join(__dirname, 'runtime.tsx.tpl'), 'utf-8'),
     });
   });
+
   api.modifyRoutes(routes => {
     return [
       {
@@ -154,5 +212,11 @@ export default (api: IApi) => {
     ];
   });
 
+  api.addUmiExports(() => [
+    {
+      exportAll: true,
+      source: '../plugin-layout/layoutExports',
+    },
+  ]);
   api.addRuntimePlugin(() => ['@@/plugin-layout/runtime.tsx']);
 };

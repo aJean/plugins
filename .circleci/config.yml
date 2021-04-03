@@ -10,7 +10,7 @@ jobs:
       - checkout
 
       - restore_cache:
-          key: node-modules-{{ checksum "yarn.json" }}
+          key: node-modules-{{ checksum "yarn.lock" }}
 
       - run:
           name: Install Dependencies
@@ -28,7 +28,7 @@ jobs:
 
       - run:
           name: Run Tests
-          command: yarn test:coverage -- --forceExit --detectOpenHandles --runInBand --maxWorkers=2
+          command: yarn test:coverage --forceExit --detectOpenHandles --maxWorkers=2
           no_output_timeout: 300m
 
       - run:

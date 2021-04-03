@@ -15,8 +15,10 @@ import {
 } from 'umi-request';
 // @ts-ignore
 import { ApplyPluginsType, history, plugin } from 'umi';
-import { message, notification } from 'antd';
-import useUmiRequest from '@umijs/use-request';
+// decoupling with antd UI library, you can using `alias` modify the ui methods
+// @ts-ignore
+import { message, notification } from '@umijs/plugin-request/lib/ui';
+import useUmiRequest, { UseRequestProvider } from '@ahooksjs/use-request';
 import {
   BaseOptions,
   BasePaginatedOptions,
@@ -32,9 +34,9 @@ import {
   PaginatedOptionsWithFormat,
   PaginatedParams,
   PaginatedResult,
-} from '@umijs/use-request/lib/types';
+} from '@ahooksjs/use-request/lib/types';
 
-type ResultWithData<T = any> = { data: T; [key: string]: any };
+type ResultWithData<T = any> = { data?: T; [key: string]: any };
 
 function useRequest<
   R = any,
@@ -54,7 +56,7 @@ function useRequest<R extends LoadMoreFormatReturn = any, RR = any>(
   options: LoadMoreOptionsWithFormat<R, RR>,
 ): LoadMoreResult<R>;
 function useRequest<
-  R extends ResultWithData<LoadMoreFormatReturn> = any,
+  R extends ResultWithData<LoadMoreFormatReturn | any> = any,
   RR extends R = any
 >(
   service: CombineService<R, LoadMoreParams<R['data']>>,
@@ -267,4 +269,4 @@ const request: RequestMethodInUmi = (url: any, options: any) => {
   return requestMethod(url, options);
 };
 
-export { request, useRequest };
+export { request, useRequest, UseRequestProvider };

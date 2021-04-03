@@ -1,6 +1,6 @@
 import { IApi } from 'umi';
 import { join, dirname } from 'path';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import {
   IGetLocaleFileListResult,
   IAddAntdLocales,
@@ -57,6 +57,18 @@ export default (api: IApi) => {
       },
     },
     enableBy: api.EnableBy.config,
+  });
+
+  const reactIntlPkgPath = winPath(
+    dirname(require.resolve('react-intl/package')),
+  );
+
+  api.addDepInfo(() => {
+    return {
+      name: 'react-intl',
+      range: require('../package.json').dependencies['react-intl'],
+      alias: [reactIntlPkgPath],
+    };
   });
 
   // polyfill
@@ -152,22 +164,21 @@ export default (api: IApi) => {
       join(__dirname, 'templates', 'localeExports.tpl'),
       'utf-8',
     );
+    const localeDirName = api.config.singular ? 'locale' : 'locales';
+    const localeDirPath = join(api.paths!.absSrcPath, localeDirName);
     api.writeTmpFile({
       path: 'plugin-locale/localeExports.ts',
       content: Mustache.render(localeExportsTpl, {
         BaseSeparator: baseSeparator,
         BaseNavigator: baseNavigator,
         UseLocalStorage: !!useLocalStorage,
-        LocaleDir: api.config.singular ? 'locale' : 'locales',
+        LocaleDir: localeDirName,
+        ExistLocaleDir: existsSync(localeDirPath),
         LocaleList: localeList,
         Antd: !!antd,
         DefaultLocale: JSON.stringify(defaultLocale),
         warningPkgPath: winPath(require.resolve('warning')),
-        // react-intl main use `dist/index.js`
-        // use dirname let webpack identify main or module
-        reactIntlPkgPath: winPath(
-          dirname(require.resolve('react-intl/package')),
-        ),
+        reactIntlPkgPath,
       }),
     });
     // runtime.tsx
@@ -194,7 +205,6 @@ export default (api: IApi) => {
         Antd: !!antd,
         LocaleList: localeList,
         ShowSelectLang: localeList.length > 1 && !!antd,
-        iconsPkgPath: winPath(require.resolve('@ant-design/icons')),
         antdFiles: api.config?.ssr ? 'lib' : 'es',
       }),
     });
@@ -208,7 +218,7 @@ export default (api: IApi) => {
 
   // Modify entry js
   api.addEntryCodeAhead(() =>
-    `require('./plugin-locale/locale')._onCreate();`.trim(),
+    `import { _onCreate } from './plugin-locale/locale';\n_onCreate();`.trim(),
   );
 
   // watch locale files

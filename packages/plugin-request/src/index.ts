@@ -14,6 +14,29 @@ export default function(api: IApi) {
 
   api.addRuntimePluginKey(() => 'request');
 
+  const umiRequestPkgPath = winPath(
+    dirname(require.resolve('umi-request/package')),
+  );
+  const useRequestPkgPath = winPath(
+    dirname(require.resolve('@ahooksjs/use-request/package')),
+  );
+
+  api.addDepInfo(() => {
+    const pkg = require('../package.json');
+    return [
+      {
+        name: 'umi-request',
+        range: pkg.dependencies['umi-request'],
+        alias: [umiRequestPkgPath],
+      },
+      {
+        name: '@ahooksjs/use-request',
+        range: pkg.dependencies['@ahooksjs/use-request'],
+        alias: [useRequestPkgPath],
+      },
+    ];
+  });
+
   // 配置
   api.describe({
     config: {
@@ -35,6 +58,18 @@ export default function(api: IApi) {
   const requestTemplate = readFileSync(source, 'utf-8');
   const namespace = 'plugin-request';
 
+  api.chainWebpack(webpackConfig => {
+    // decoupling antd ui library
+    webpackConfig.resolve.alias.set(
+      '@umijs/plugin-request/lib/ui',
+      api.config.antd === false
+        ? require.resolve('./ui/noop')
+        : require.resolve('./ui/index'),
+    );
+
+    return webpackConfig;
+  });
+
   api.onGenerateFiles(() => {
     const { dataField = 'data' } = api.config.request as RequestOptions;
     try {
@@ -50,15 +85,9 @@ export default function(api: IApi) {
         content: requestTemplate
           .replace(/\/\*FRS\*\/(.+)\/\*FRE\*\//, formatResultStr)
           .replace(/\['data'\]/g, dataField ? `['${dataField}']` : '')
-          .replace(/data: T;/, dataField ? `${dataField}: T;` : '')
-          .replace(
-            /umi-request/g,
-            winPath(dirname(require.resolve('umi-request/package'))),
-          )
-          .replace(
-            /@umijs\/use-request/g,
-            winPath(dirname(require.resolve('@umijs/use-request/package'))),
-          )
+          .replace(/data\?: T;/, dataField ? `${dataField}?: T;` : '')
+          .replace(/umi-request/g, umiRequestPkgPath)
+          .replace(/@ahooksjs\/use-request/g, useRequestPkgPath)
           .replace(
             `import { ApplyPluginsType, history, plugin } from 'umi';`,
             `
